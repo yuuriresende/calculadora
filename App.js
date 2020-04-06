@@ -1,16 +1,51 @@
-import React from 'react';
+import React, { useState, Component } from 'react';
 import { StyleSheet, Text, View, Button, TouchableOpacity } from 'react-native';
 
-export default function App() {
-  let nums = [[1,2,3], [4,5,6], [7,8,9], [0, 0, '=']]
+
+export default class App extends Component {
+ constructor(){
+    super()
+    this.state = {
+      resultText: ""
+    }
+ }
+  calcularResultado(){
+    const text = this.state.resultText
+  } 
+
+  pressionarBotao(text){
+    console.log(text)
+
+    if(text == '=') {
+      return this.calcularResultado()
+    }
+
+    this.setState({
+        resultText: this.state.resultText+text
+    })
+  }
+  operar(operacao){
+      switch(operacao){
+        case 'D':
+          const text = this.state.resultText.split('')
+          text.pop()
+          text.join('')
+          this.setState({
+            resultText: text.join('')
+          })
+      }
+  }
+  render(){
+  let nums = [[1,2,3], [4,5,6], [7,8,9], ['.', 0, '=']]
   let rows = []
+  
   for(let i = 0; i < 4; i++){
     
     let row = []
     for(let j = 0; j < 3; j++){
       
       row.push(        
-        <TouchableOpacity style={styles.btn}>
+        <TouchableOpacity onPress={() => this.pressionarBotao(nums[i][j])} style={styles.btn}>
           <Text style={styles.btnTexto}>{nums[i][j]}</Text>
         </TouchableOpacity>
       )      
@@ -19,11 +54,12 @@ export default function App() {
     rows.push(<View style={styles.row}>{row}</View>)
   }
 
-  let operacoes = ['+', '-', '*', '/']
+    
+  let operacoes = ['D','+', '-', '*', '/']
   let ops = []
-  for (let i = 0; i < 4; i++){
+  for (let i = 0; i < 5; i++){
     ops.push(
-      <TouchableOpacity style={styles.btn}>
+      <TouchableOpacity style={styles.btn} onPress={() => this.operar(operacoes[i])}>
         <Text style={styles.textoOp}>{operacoes[i]}</Text>
       </TouchableOpacity>
     )
@@ -32,7 +68,9 @@ export default function App() {
     
     <View style={styles.container}>
       <View style={styles.resultado}>
-        <Text style={styles.textoResultado}>12*12</Text>
+        <Text style={styles.textoResultado}>
+          {this.state.resultText}
+        </Text>
       </View>
       <View style={styles.calcular}>
         <Text style={styles.textoCalcular}>144</Text>
@@ -48,6 +86,7 @@ export default function App() {
       </View>
     </View>
   );
+}
 }
 
 const styles = StyleSheet.create({

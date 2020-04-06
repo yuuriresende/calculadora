@@ -6,18 +6,37 @@ export default class App extends Component {
  constructor(){
     super()
     this.state = {
-      resultText: ""
+      resultText: "",
+      textoCalcular: ""
     }
+    this.operacoes = ['D','+', '-', '*', '/']
+
  }
   calcularResultado(){
     const text = this.state.resultText
+    console.log(text, eval(text))
+    this.setState({
+      textoCalcular: eval(text)
+    })
   } 
+
+  validar(){
+    const text = this.state.resultText
+    switch(text.slice(-1)){
+      case '+':
+      case '-':
+      case '*':
+      case '/':
+        return false
+    } 
+    return true
+  }
 
   pressionarBotao(text){
     console.log(text)
 
     if(text == '=') {
-      return this.calcularResultado()
+      return this.validar() && this.calcularResultado()
     }
 
     this.setState({
@@ -26,14 +45,31 @@ export default class App extends Component {
   }
   operar(operacao){
       switch(operacao){
-        case 'D':
+        case 'DEL':
           const text = this.state.resultText.split('')
           text.pop()
           text.join('')
           this.setState({
             resultText: text.join('')
           })
-      }
+          break
+        
+        case '+':
+        case '-':
+        case '/':
+        case '*':
+          
+          const ultimoChar = this.state.resultText.split('').pop()
+
+          if(this.operacoes.indexOf(ultimoChar) > 0) return
+        
+          if(this.state.text == "") return
+          this.setState({
+            resultText: this.state.resultText + operacao
+          })
+          
+  
+        } 
   }
   render(){
   let nums = [[1,2,3], [4,5,6], [7,8,9], ['.', 0, '=']]
@@ -45,22 +81,22 @@ export default class App extends Component {
     for(let j = 0; j < 3; j++){
       
       row.push(        
-        <TouchableOpacity onPress={() => this.pressionarBotao(nums[i][j])} style={styles.btn}>
+        <TouchableOpacity key={nums[i][j]} onPress={() => this.pressionarBotao(nums[i][j])} style={styles.btn}>
           <Text style={styles.btnTexto}>{nums[i][j]}</Text>
         </TouchableOpacity>
       )      
       
     }
-    rows.push(<View style={styles.row}>{row}</View>)
+    rows.push(<View key={i} style={styles.row}>{row}</View>)
   }
 
     
-  let operacoes = ['D','+', '-', '*', '/']
+  this.operacoes = ['DEL','+', '-', '*', '/']
   let ops = []
   for (let i = 0; i < 5; i++){
     ops.push(
-      <TouchableOpacity style={styles.btn} onPress={() => this.operar(operacoes[i])}>
-        <Text style={styles.textoOp}>{operacoes[i]}</Text>
+      <TouchableOpacity key={this.operacoes[i]} style={styles.btn} onPress={() => this.operar(this.operacoes[i])}>
+        <Text style={styles.textoOp}>{this.operacoes[i]}</Text>
       </TouchableOpacity>
     )
   }
@@ -73,7 +109,7 @@ export default class App extends Component {
         </Text>
       </View>
       <View style={styles.calcular}>
-        <Text style={styles.textoCalcular}>144</Text>
+        <Text style={styles.textoCalcular}>{this.state.textoCalcular}</Text>
       </View>
       <View style={styles.botoes}>
         <View style={styles.numeros}>
@@ -96,12 +132,12 @@ const styles = StyleSheet.create({
   
   textoResultado: {
     fontSize: 28,
-    color: 'white'
+    color: 'black'
   },
 
   textoCalcular: {
     fontSize: 18,
-    color: 'white'
+    color: 'black'
   },
 
   textoOp:{
@@ -123,7 +159,8 @@ const styles = StyleSheet.create({
   },
 
   btnTexto:{
-    fontSize: 30
+    fontSize: 30,
+    color: 'white'
   },
 
   btnOp:{
@@ -135,14 +172,14 @@ const styles = StyleSheet.create({
 
   resultado: {
     flex: 2,
-    backgroundColor: 'red',
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'flex-end'
   },
 
   calcular: {
     flex: 1,
-    backgroundColor: 'green',
+    backgroundColor: 'white',
     justifyContent: 'center',
     alignItems: 'flex-end'
   },
@@ -154,14 +191,16 @@ const styles = StyleSheet.create({
 
   numeros: {
     flex: 3,
-    backgroundColor: 'yellow'
+    backgroundColor: '#434343',
+    color: 'white'
   },
 
   operacoes: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: '#636363',
     flexDirection: 'column',
     justifyContent: "space-around",
     alignItems: 'center'
+    
   }
 });
